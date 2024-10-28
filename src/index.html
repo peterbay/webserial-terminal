@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css"
+        />
+        <link
+            rel="stylesheet"
+            href="./assets/css/styles.css"
+        />
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <title>WebSerial TERMINAL</title>
+    </head>
+    <body>
+        <div id="app">
+            <div id="top-bar">
+                <button
+                    type="button"
+                    id="button-connect"
+                    class="toolbar-button toolbar-space corner"
+                >
+                    Connect to Serial
+                </button>
+                <label
+                    for="select-serial-port-baudrate"
+                    class="toolbar-input-label"
+                >
+                    Baudrate:
+                </label>
+                <select
+                    id="select-serial-port-baudrate"
+                    class="toolbar-select toolbar-space on-connected-disabled"
+                >
+                    <option value="9600">9600</option>
+                    <option value="19200">19200</option>
+                    <option value="38400">38400</option>
+                    <option value="57600">57600</option>
+                    <option value="115200">115200</option>
+                    <option value="230400">230400</option>
+                    <option value="460800">460800</option>
+                    <option value="921600">921600</option>
+                </select>
+                <label
+                    for="input-font-size"
+                    class="toolbar-input-label"
+                >
+                    Font Size:
+                </label>
+                <div
+                    id="button-font-size-minus"
+                    class="toolbar-button corner"
+                >
+                    &minus;
+                </div>
+                <input
+                    id="input-font-size"
+                    class="toolbar-input"
+                    type="number"
+                    min="10"
+                    max="40"
+                />
+                <div
+                    id="button-font-size-plus"
+                    class="toolbar-button toolbar-space"
+                >
+                    &plus;
+                </div>
+                <div class="toolbar-spacer"></div>
+                <button
+                    id="button-ctrl-c"
+                    class="toolbar-button toolbar-space on-connected-show corner"
+                >
+                    Ctrl+C
+                </button>
+                <button
+                    type="button"
+                    id="button-ctrl-d"
+                    class="toolbar-button toolbar-space on-connected-show corner"
+                >
+                    Ctrl+D
+                </button>
+                <button
+                    type="button"
+                    id="button-scroll-to-bottom"
+                    class="toolbar-button on-connected-show corner"
+                >
+                    Scroll to bottom
+                </button>
+            </div>
+            <div id="main">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 100 100"
+                    class="terminal-background"
+                >
+                    <text
+                        id="terminal-background-text"
+                        x="50%"
+                        y="50%"
+                        dominant-baseline="middle"
+                        text-anchor="middle"
+                        font-size="10"
+                        fill="gray"
+                        style="opacity: 0.1"
+                    ></text>
+                </svg>
+                <div id="terminal-container"></div>
+            </div>
+            <div id="data-table-info">
+                <div class="data-table-info-cell">
+                    <div class="data-table-info-label">Locked</div>
+                    <div class="data-table-info-value">
+                        <svg
+                            id="data-table-info-lock"
+                            fill="red"
+                            height="22px"
+                            width="22px"
+                            viewBox="0 0 330 330"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="m 65,325 h 200 c 8,0 15,-6 15,-15 v -170 c 0,-8 -6,-15 -15,-15 H 250 V 89 c 0,-46 -38,-85 -85,-85 -46,0 -85,38 -85,85 v 35 H 65 c -8,0 -15,6 -15,15 v 170 c 0,8 6,15 15,15 z m 117,-93 v 23 c 0,9 -8,17 -17,17 -9,0 -17,-7 -17,-17 V 232 C 139,227 135,218 135,209 c 0,-16 13,-29 29,-29 16,0 29,13 29,29 0,9 -4,17 -11,23 z M 110,89 c 0,-30 24,-55 55,-55 30,0 55,24 55,55 v 35 H 110 Z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <div class="data-table-info-cell">
+                    <div class="data-table-info-label">Direction</div>
+                    <div
+                        id="data-table-info-direction"
+                        class="data-table-info-value"
+                    ></div>
+                </div>
+                <div class="data-table-info-cell">
+                    <div class="data-table-info-label">HEX</div>
+                    <div
+                        id="data-table-info-hex"
+                        class="data-table-info-value"
+                    ></div>
+                </div>
+
+                <div class="data-table-info-cell">
+                    <div class="data-table-info-label">DEC</div>
+                    <div
+                        id="data-table-info-dec"
+                        class="data-table-info-value"
+                    ></div>
+                </div>
+                <div class="data-table-info-cell">
+                    <div class="data-table-info-label">BIN</div>
+                    <div
+                        id="data-table-info-bin"
+                        class="data-table-info-value"
+                    ></div>
+                </div>
+                <div class="data-table-info-cell">
+                    <div class="data-table-info-label">ASCII</div>
+                    <div
+                        id="data-table-info-ascii"
+                        class="data-table-info-value"
+                    ></div>
+                </div>
+                <div class="data-table-info-cell">
+                    <div class="data-table-info-label">Info</div>
+                    <div
+                        id="data-table-info-detail"
+                        class="data-table-info-value"
+                    ></div>
+                </div>
+            </div>
+            <div id="data-tables">
+                <div id="data-table-hex"></div>
+                <div id="data-table-ascii"></div>
+            </div>
+            <div id="about">
+                WebSerial TERMINAL - <small>version 1.0.0</small><br /><br />
+
+                is a terminal emulator that allows you to connect to a serial device from your web browser.<br /><br />
+
+                Based on the
+                <a
+                    href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API"
+                    target="_blank"
+                    >WebSerial API</a
+                >
+                and
+                <a
+                    href="https://xtermjs.org/"
+                    target="_blank"
+                    >xterm.js</a
+                ><br /><br />
+
+                Author:
+                <a
+                    href="https://github.com/peterbay"
+                    target=""
+                    >Peter Bay</a
+                ><br /><br />
+
+                Licence: MIT<br /><br />
+
+                Repository: Github -
+                <a
+                    href="https://github.com/peterbay/webserial-terminal"
+                    target="_blank"
+                    >peterbay/webserial-terminal</a
+                >
+            </div>
+            <div id="bottom-bar">
+                <div class="toolbar-icons toolbar-space">
+                    <svg
+                        class="toolbar-svg-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 400 400"
+                        style="margin-top: -3px"
+                    >
+                        <style>
+                            .cls-2 {
+                                fill: none;
+                                stroke: #313131;
+                                stroke-width: 30;
+                                stroke-linecap: round;
+                                stroke-linejoin: round;
+                                stroke-dasharray: none;
+                            }
+                        </style>
+                        <g class="cls-2">
+                            <path
+                                d="M 170,116 H 283 V 63 l 95,94 -96,97 v -55 h -79"
+                                id="svg-to-device"
+                            />
+                            <path
+                                d="M 228,283 H 117 V 336 L 20,241 117,145 v 53 h 85"
+                                id="svg-from-device"
+                            />
+                        </g>
+                    </svg>
+                    <svg
+                        class="toolbar-svg-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 400 400"
+                    >
+                        <g class="cls-2">
+                            <path
+                                d="M 155 66 L 155 112 L 155 66 z M 200 66 L 200 112 L 200 66 z M 245 66 L 245 112 L 245 66 z M 115 115 L 115 284 L 284 284 L 284 115 L 115 115 z M 66 153 L 112 153 L 66 153 z M 287 153 L 333 153 L 287 153 z M 66 198 L 112 198 L 66 198 z M 287 198 L 333 198 L 287 198 z M 66 243 L 112 243 L 66 243 z M 287 243 L 333 243 L 287 243 z M 155 286 L 155 333 L 155 286 z M 200 286 L 200 333 L 200 286 z M 245 286 L 245 333 L 245 286 z"
+                                id="svg-device"
+                            />
+                        </g>
+                    </svg>
+                </div>
+                <span id="transfer-stats"></span>
+                <div class="toolbar-spacer"></div>
+                <button
+                    type="button"
+                    id="button-show-about"
+                    class="toolbar-button corner toolbar-space"
+                >
+                    About TERMINAL
+                </button>
+                <button
+                    type="button"
+                    id="button-reset-stats"
+                    class="toolbar-button corner toolbar-space"
+                >
+                    Reset Stats
+                </button>
+                <button
+                    type="button"
+                    id="button-show-buffer"
+                    class="toolbar-button corner"
+                >
+                    Show Buffer
+                </button>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
+        <script src="./assets/js/config.js"></script>
+        <script src="./assets/js/io-buffer.js"></script>
+        <script src="./assets/js/main.js"></script>
+    </body>
+</html>
