@@ -303,6 +303,12 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDataBufferVisibility();
     }
 
+    function onWindowClick(event) {
+        if (showAbout && !about.contains(event.target) && !buttonShowAbout.contains(event.target)) {
+            toggleAboutVisibility();
+        }
+    }
+
     function confirmExit() {
         return "You have attempted to leave this page. Are you sure?";
     }
@@ -384,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.addEventListener('resize', () => fitAddon.fit());
+    window.addEventListener('click', onWindowClick);
     terminalContainer.addEventListener('click', () => terminal.focus());
     connectButton.addEventListener('click', () => connect());
     buttonCtrlC.addEventListener('click', () => sendCtrlC());
