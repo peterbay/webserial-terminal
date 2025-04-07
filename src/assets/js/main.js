@@ -314,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function readFromPort() {
+        const decoder = new TextDecoder('utf-8'); 
         try {
             reader = port.readable.getReader();
             while (true) {
@@ -324,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (value) {
                     ioBuffer.push(value, 'in');
                     portReadedChars += value.length;
-                    const chars = new TextDecoder().decode(value);
+                    const chars = decoder.decode(value, { stream: true });
                     terminal.write(chars);
                 }
             }
@@ -332,8 +333,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(err);
             terminal.writeln(`Terminal error: reading from serial port.`);
         } finally {
-            reader.releaseLock();
-            disconnect();
+           if (reader) { 
+               reader.releaseLock();
+           }
+            disconnect(); 
         }
     }
 
